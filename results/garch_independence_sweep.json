@@ -1,0 +1,19 @@
+{
+  "by_metric": {
+    "slope": {
+      "median_raw_r": -0.09479349432065975,
+      "median_residual_r": 0.008335071980433435,
+      "median_ratio": -0.09590910912812944
+    },
+    "entropy": {
+      "median_raw_r": 0.05873874108737119,
+      "median_residual_r": 0.004403133757646869,
+      "median_ratio": 0.07296166455985295
+    },
+    "max_abs": {
+      "median_raw_r": 0.0814943649674676,
+      "median_residual_r": 0.01308779317487942,
+      "median_ratio": 0.14069726739148553
+    }
+  }
+}
