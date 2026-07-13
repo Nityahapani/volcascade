@@ -1,0 +1,250 @@
+{
+  "per_stock": [
+    {
+      "ticker": "AAPL",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.20056899004267426,
+      "spearman_p": 0.22727653274046283
+    },
+    {
+      "ticker": "ABBV",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.5601269285479812,
+      "spearman_p": 0.00025526782412752446
+    },
+    {
+      "ticker": "AMGN",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.7428602691760586,
+      "spearman_p": 9.263675749527146e-08
+    },
+    {
+      "ticker": "AMZN",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.34303534303534305,
+      "spearman_p": 0.03499460332664738
+    },
+    {
+      "ticker": "BA",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.33515701936754566,
+      "spearman_p": 0.039691341624172996
+    },
+    {
+      "ticker": "BAC",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.37345442608600504,
+      "spearman_p": 0.02091650883503061
+    },
+    {
+      "ticker": "CAT",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.3802385381332749,
+      "spearman_p": 0.018529355860754045
+    },
+    {
+      "ticker": "COP",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.2850421271473903,
+      "spearman_p": 0.08280985810168985
+    },
+    {
+      "ticker": "COST",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.4253200568990043,
+      "spearman_p": 0.007767851127496479
+    },
+    {
+      "ticker": "CVX",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.2073531020899442,
+      "spearman_p": 0.21161352654194468
+    },
+    {
+      "ticker": "GE",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.39993434730276833,
+      "spearman_p": 0.01285319997076435
+    },
+    {
+      "ticker": "GOOGL",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.16708611445453553,
+      "spearman_p": 0.3160287444069755
+    },
+    {
+      "ticker": "GS",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.48769011926906664,
+      "spearman_p": 0.0018977897059467095
+    },
+    {
+      "ticker": "HD",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.5047598205492942,
+      "spearman_p": 0.0012301907527557184
+    },
+    {
+      "ticker": "HON",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.10099573257467995,
+      "spearman_p": 0.5462904539881284
+    },
+    {
+      "ticker": "JNJ",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.5373673268410111,
+      "spearman_p": 0.0005034966981273427
+    },
+    {
+      "ticker": "JPM",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.46449283291388554,
+      "spearman_p": 0.0033049921764335805
+    },
+    {
+      "ticker": "KO",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.26490863332968595,
+      "spearman_p": 0.10798420377900918
+    },
+    {
+      "ticker": "LOW",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.42750848014005904,
+      "spearman_p": 0.0074246273811225325
+    },
+    {
+      "ticker": "MCD",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.42575774154721524,
+      "spearman_p": 0.007698138278620232
+    },
+    {
+      "ticker": "META",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.45333187438450595,
+      "spearman_p": 0.004259005488794999
+    },
+    {
+      "ticker": "MMM",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.39271255060728744,
+      "spearman_p": 0.014734013118131321
+    },
+    {
+      "ticker": "MRK",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.5610022978444031,
+      "spearman_p": 0.0002484400089728859
+    },
+    {
+      "ticker": "MS",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.4625232519969362,
+      "spearman_p": 0.003458370775639403
+    },
+    {
+      "ticker": "MSFT",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.40496772075719445,
+      "spearman_p": 0.011666142220251068
+    },
+    {
+      "ticker": "NKE",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.45245650508808405,
+      "spearman_p": 0.004343040781540119
+    },
+    {
+      "ticker": "PFE",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.27847685742422584,
+      "spearman_p": 0.0904601578598789
+    },
+    {
+      "ticker": "PG",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.49710033920560237,
+      "spearman_p": 0.0014984871550482038
+    },
+    {
+      "ticker": "SLB",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.36207462523251993,
+      "spearman_p": 0.02549489664193795
+    },
+    {
+      "ticker": "TGT",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.6139621402779297,
+      "spearman_p": 4.138040988348798e-05
+    },
+    {
+      "ticker": "UNH",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.5706313601050443,
+      "spearman_p": 0.00018344557313137246
+    },
+    {
+      "ticker": "WFC",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.2977349819455083,
+      "spearman_p": 0.06945144412193809
+    },
+    {
+      "ticker": "WMT",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.690775796038954,
+      "spearman_p": 1.5854080682835364e-06
+    },
+    {
+      "ticker": "XOM",
+      "n_quarters": 38,
+      "n_events": 38,
+      "spearman_r": -0.20319509793194004,
+      "spearman_p": 0.2211221896159962
+    }
+  ],
+  "summary": {
+    "n_stocks": 34,
+    "n_events": 1292,
+    "n_significant": 25,
+    "n_negative": 34,
+    "median_spearman": -0.4151438888280994,
+    "fisher_combined_p": 0.0
+  }
+}
