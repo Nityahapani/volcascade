@@ -1,0 +1,81 @@
+{
+  "per_asset": [
+    {
+      "asset": "SPY",
+      "n_regimes": 268,
+      "n_cascade_exits": 2887,
+      "n_naive_exits": 3357,
+      "false_rate_cascade": 0.5549012816072048,
+      "false_rate_naive": 0.44801906464104857,
+      "cascade_mean_lead_days": 10.325688073394495,
+      "naive_mean_lead_days": 11.621621621621621,
+      "cascade_pct_with_exit_signal": 0.8134328358208955,
+      "naive_pct_with_exit_signal": 0.9664179104477612
+    },
+    {
+      "asset": "XLE",
+      "n_regimes": 252,
+      "n_cascade_exits": 3132,
+      "n_naive_exits": 3387,
+      "false_rate_cascade": 0.47701149425287354,
+      "false_rate_naive": 0.39769707705934454,
+      "cascade_mean_lead_days": 10.900943396226415,
+      "naive_mean_lead_days": 12.775933609958507,
+      "cascade_pct_with_exit_signal": 0.8412698412698413,
+      "naive_pct_with_exit_signal": 0.9563492063492064
+    },
+    {
+      "asset": "XLF",
+      "n_regimes": 286,
+      "n_cascade_exits": 2915,
+      "n_naive_exits": 3348,
+      "false_rate_cascade": 0.5982847341337907,
+      "false_rate_naive": 0.4913381123058542,
+      "cascade_mean_lead_days": 10.396761133603238,
+      "naive_mean_lead_days": 11.07857142857143,
+      "cascade_pct_with_exit_signal": 0.8636363636363636,
+      "naive_pct_with_exit_signal": 0.9790209790209791
+    },
+    {
+      "asset": "XLK",
+      "n_regimes": 250,
+      "n_cascade_exits": 3079,
+      "n_naive_exits": 3411,
+      "false_rate_cascade": 0.5381617408249432,
+      "false_rate_naive": 0.44649662855467603,
+      "cascade_mean_lead_days": 10.872146118721462,
+      "naive_mean_lead_days": 9.434426229508198,
+      "cascade_pct_with_exit_signal": 0.876,
+      "naive_pct_with_exit_signal": 0.976
+    },
+    {
+      "asset": "XLV",
+      "n_regimes": 266,
+      "n_cascade_exits": 2819,
+      "n_naive_exits": 3403,
+      "false_rate_cascade": 0.5015963107484924,
+      "false_rate_naive": 0.43138407287687336,
+      "cascade_mean_lead_days": 11.184684684684685,
+      "naive_mean_lead_days": 12.198443579766536,
+      "cascade_pct_with_exit_signal": 0.8345864661654135,
+      "naive_pct_with_exit_signal": 0.9661654135338346
+    },
+    {
+      "asset": "XLY",
+      "n_regimes": 273,
+      "n_cascade_exits": 3055,
+      "n_naive_exits": 3355,
+      "false_rate_cascade": 0.48707037643207857,
+      "false_rate_naive": 0.44470938897168405,
+      "cascade_mean_lead_days": 12.572016460905349,
+      "naive_mean_lead_days": 11.079545454545455,
+      "cascade_pct_with_exit_signal": 0.8901098901098901,
+      "naive_pct_with_exit_signal": 0.967032967032967
+    }
+  ],
+  "summary": {
+    "n_assets": 6,
+    "mean_false_rate_cascade": 0.5261709896665638,
+    "mean_false_rate_naive": 0.44327405740158016
+  }
+}

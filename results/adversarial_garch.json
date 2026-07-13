@@ -1,0 +1,20 @@
+{
+  "n_universes": 1000,
+  "n_days": 5000,
+  "params": {
+    "inner_window": 10,
+    "zscore_lookback": 120,
+    "forward_days": 5
+  },
+  "model": "AR(1)-GARCH(1,1) with Student-t innovations",
+  "pearson": {
+    "mean": -0.0756162981611157,
+    "std": 0.06738888276748724,
+    "frac_abs_gt_005": 0.606
+  },
+  "spearman": {
+    "mean": -0.08668369461548156,
+    "std": 0.07957417336116843,
+    "frac_abs_gt_005": 0.675
+  }
+}
