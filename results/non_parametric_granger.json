@@ -1,0 +1,356 @@
+{
+  "direct_slope_to_vol": [
+    {
+      "asset": "SPY",
+      "lag": 1,
+      "r": -0.1437483503267224,
+      "p": 9.166354570252101e-30,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "SPY",
+      "lag": 2,
+      "r": -0.13531787451495697,
+      "p": 1.571770983025575e-26,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "SPY",
+      "lag": 3,
+      "r": -0.12838312346137207,
+      "p": 5.098624746179245e-24,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "SPY",
+      "lag": 5,
+      "r": -0.11725196335309265,
+      "p": 2.873125336085191e-20,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "SPY",
+      "lag": 10,
+      "r": -0.10259353131750615,
+      "p": 7.589412822316686e-16,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLE",
+      "lag": 1,
+      "r": -0.13422185621162283,
+      "p": 3.959424712055536e-26,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLE",
+      "lag": 2,
+      "r": -0.13265819435259557,
+      "p": 1.492537252073326e-25,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLE",
+      "lag": 3,
+      "r": -0.12911541024663736,
+      "p": 2.8122287690733157e-24,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLE",
+      "lag": 5,
+      "r": -0.12402506770536158,
+      "p": 1.6644562130065185e-22,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLE",
+      "lag": 10,
+      "r": -0.10612085542234168,
+      "p": 7.471311957884782e-17,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLF",
+      "lag": 1,
+      "r": -0.11830086708173454,
+      "p": 1.2817840313079721e-20,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLF",
+      "lag": 2,
+      "r": -0.10512015668716944,
+      "p": 1.3895956635717992e-16,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLF",
+      "lag": 3,
+      "r": -0.09480908049138308,
+      "p": 9.306679294185476e-14,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLF",
+      "lag": 5,
+      "r": -0.08034812472468092,
+      "p": 2.809320575614079e-10,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLF",
+      "lag": 10,
+      "r": -0.07384921280652915,
+      "p": 6.8387562887939685e-09,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLV",
+      "lag": 1,
+      "r": -0.09517587406020978,
+      "p": 7.400733576886795e-14,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLV",
+      "lag": 2,
+      "r": -0.08730176332236132,
+      "p": 6.952108122928217e-12,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLV",
+      "lag": 3,
+      "r": -0.08030224312004462,
+      "p": 2.856683315070375e-10,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLV",
+      "lag": 5,
+      "r": -0.08287874595249557,
+      "p": 7.598969397825839e-11,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLV",
+      "lag": 10,
+      "r": -0.08118111520942628,
+      "p": 1.8660321226766735e-10,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLY",
+      "lag": 1,
+      "r": -0.16181032088860609,
+      "p": 2.313792106201804e-37,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLY",
+      "lag": 2,
+      "r": -0.15528089734169206,
+      "p": 1.673426637623868e-34,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLY",
+      "lag": 3,
+      "r": -0.14815376710716235,
+      "p": 1.6005576920853368e-31,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLY",
+      "lag": 5,
+      "r": -0.13184149374223889,
+      "p": 3.0314848603953617e-25,
+      "direction": "slope -> fwd_vol"
+    },
+    {
+      "asset": "XLY",
+      "lag": 10,
+      "r": -0.10168624251409177,
+      "p": 1.3605412208675695e-15,
+      "direction": "slope -> fwd_vol"
+    }
+  ],
+  "reverse_vol_to_slope": [
+    {
+      "asset": "SPY",
+      "lag": 1,
+      "r": -0.19485237674719696,
+      "p": 1.0581375530845573e-53,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "SPY",
+      "lag": 2,
+      "r": -0.23701632047932072,
+      "p": 2.709896429531745e-79,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "SPY",
+      "lag": 3,
+      "r": -0.27376625562346124,
+      "p": 3.665188082334389e-106,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "SPY",
+      "lag": 5,
+      "r": -0.34062854109494206,
+      "p": 7.597027558844264e-167,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "SPY",
+      "lag": 10,
+      "r": -0.2905644728831347,
+      "p": 8.337665166498858e-120,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLE",
+      "lag": 1,
+      "r": -0.1799410280588231,
+      "p": 6.2277958534495475e-46,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLE",
+      "lag": 2,
+      "r": -0.22875022436060563,
+      "p": 7.654942737790985e-74,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLE",
+      "lag": 3,
+      "r": -0.27218391068389913,
+      "p": 6.4977332381925244e-105,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLE",
+      "lag": 5,
+      "r": -0.35644498981673317,
+      "p": 1.2907673830472883e-183,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLE",
+      "lag": 10,
+      "r": -0.3149536389137365,
+      "p": 1.590651525456909e-141,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLF",
+      "lag": 1,
+      "r": -0.17991480251505512,
+      "p": 6.418328858175136e-46,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLF",
+      "lag": 2,
+      "r": -0.2268704188792701,
+      "p": 1.2408123760877534e-72,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLF",
+      "lag": 3,
+      "r": -0.26664769725114634,
+      "p": 1.3057576087072068e-100,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLF",
+      "lag": 5,
+      "r": -0.32772123907739276,
+      "p": 7.216496249209383e-154,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLF",
+      "lag": 10,
+      "r": -0.2560177784038439,
+      "p": 1.5773457656664376e-92,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLV",
+      "lag": 1,
+      "r": -0.14637111488992147,
+      "p": 8.249903800941201e-31,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLV",
+      "lag": 2,
+      "r": -0.19116779948717433,
+      "p": 1.0323653087323737e-51,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLV",
+      "lag": 3,
+      "r": -0.23481125521576268,
+      "p": 8.325497557835014e-78,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLV",
+      "lag": 5,
+      "r": -0.3230478695648434,
+      "p": 2.53543968156531e-149,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLV",
+      "lag": 10,
+      "r": -0.27837897721467064,
+      "p": 9.977461491430408e-110,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLY",
+      "lag": 1,
+      "r": -0.20463569678219937,
+      "p": 3.689873661984294e-59,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLY",
+      "lag": 2,
+      "r": -0.2392224997551328,
+      "p": 8.744409607156456e-81,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLY",
+      "lag": 3,
+      "r": -0.2706615128960845,
+      "p": 1.0144473984794512e-103,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLY",
+      "lag": 5,
+      "r": -0.3323557698286664,
+      "p": 1.8639950305715176e-158,
+      "direction": "fwd_vol -> slope"
+    },
+    {
+      "asset": "XLY",
+      "lag": 10,
+      "r": -0.2823594052187135,
+      "p": 5.788905072274443e-113,
+      "direction": "fwd_vol -> slope"
+    }
+  ]
+}
