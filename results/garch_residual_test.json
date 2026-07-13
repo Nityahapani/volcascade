@@ -1,0 +1,70 @@
+{
+  "per_asset": [
+    {
+      "asset": "SPY",
+      "n_days": 6287,
+      "raw_spearman_r": -0.15010271494131533,
+      "raw_spearman_p": 2.4549608258654473e-32,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": 0.0027566921120582935,
+      "garch_residual_spearman_p": 0.8288499724131808,
+      "garch_residual_n": 6152
+    },
+    {
+      "asset": "XLE",
+      "n_days": 6287,
+      "raw_spearman_r": -0.1339844467280267,
+      "raw_spearman_p": 4.7974594812458595e-26,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": -0.02977112528388564,
+      "garch_residual_spearman_p": 0.019536529896829472,
+      "garch_residual_n": 6152
+    },
+    {
+      "asset": "XLF",
+      "n_days": 6287,
+      "raw_spearman_r": -0.12911873922684258,
+      "raw_spearman_p": 2.7341126041132636e-24,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": -0.049075969161995144,
+      "garch_residual_spearman_p": 0.00011773438094534595,
+      "garch_residual_n": 6152
+    },
+    {
+      "asset": "XLK",
+      "n_days": 6287,
+      "raw_spearman_r": -0.07867372830810944,
+      "raw_spearman_p": 6.427377187496594e-10,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": -0.017552188466637315,
+      "garch_residual_spearman_p": 0.16865863521463667,
+      "garch_residual_n": 6152
+    },
+    {
+      "asset": "XLV",
+      "n_days": 6287,
+      "raw_spearman_r": -0.09932841093814895,
+      "raw_spearman_p": 5.757017384303756e-15,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": -0.0063860996437397665,
+      "garch_residual_spearman_p": 0.6165153739355588,
+      "garch_residual_n": 6152
+    },
+    {
+      "asset": "XLY",
+      "n_days": 6287,
+      "raw_spearman_r": -0.16477896766896527,
+      "raw_spearman_p": 1.0477895615524861e-38,
+      "raw_n": 6153,
+      "garch_residual_spearman_r": -0.054928690375694526,
+      "garch_residual_spearman_p": 1.627433142241449e-05,
+      "garch_residual_n": 6152
+    }
+  ],
+  "summary": {
+    "n_assets": 6,
+    "raw_median_spearman": -0.13155159297743463,
+    "garch_residual_median_spearman": -0.023661656875261478,
+    "garch_residual_n_significant": 3
+  }
+}
