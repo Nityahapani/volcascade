@@ -1,12 +1,10 @@
-# volcascade
+# VolCascade: A Term Structure of Differentiation Order for Realized Volatility
 
-**The Volatility Cascade: A Term Structure of Differentiation Order for Detecting Regime Breaks and Idiosyncratic Risk, Across Developed and Frontier Markets.**
-
-A Python package and companion paper that constructs a multi-order iterated-realized-volatility statistic (the *volatility cascade*) and uses it to classify regime entry, mark regime exit, decouple idiosyncratic from systemic risk, and test whether these dynamics hold in frontier markets.
+A Python package and companion paper that constructs a multi-order iterated-realized-volatility statistic (the *volatility cascade*) and uses it to classify regime breaks, mark regime exits, decouple idiosyncratic from systemic risk in cross-section, and test whether these dynamics differ between developed and frontier markets.
 
 ## What is the volatility cascade?
 
-Volatility-of-volatility is well established at a single order (vol-of-vol, VVIX, options-implied measures), but the literature stops there. The **volatility cascade** treats the full ladder of iterated volatility-of-volatility (order 1 through N) as a joint object — analogous to how the VIX term structure across maturities is more informative than any single VIX level. The informative axis is **differentiation order**, not time.
+Volatility-of-volatility is well established at a single order (vol-of-vol, VVIX, options-implied measures), but the literature stops there. The **volatility cascade** treats the full ladder of iterated realized volatilities (order 1 through N) as a joint object — analogous to how the VIX term structure across maturities is more informative than any single VIX level. The informative axis is **differentiation order**, not time.
 
 ```
 returns          → order-1 vol (realized volatility)
@@ -27,20 +25,17 @@ The shape of the cascade (flat vs. steepening vs. inverted) at each time `t` is 
 ## Repo layout
 
 - `docs/DESIGN_MEMO.md` — locked methodology + package design (1 page)
-- `docs/METHODOLOGY.md` — full mathematical treatment
-- `docs/IMPLEMENTATION_NOTES.md` — known gaps between methodology and current code
-- `data/ground_truth_events.csv` — H3 curated event table (AAPL earnings, FOMC)
+- `docs/METHODOLOGY.md` — formal mathematical treatment
 - `src/volcascade/` — package source (cascade, decoupling, baselines, io, viz)
-- `tests/` — pytest test suite
-- `experiments/` — pilot scripts (.py), one per hypothesis-version
-- `results/` — JSON outputs and human-readable narratives from each experiment
-- `paper/` — *pending* (manuscript source not yet started; see DESIGN_MEMO deliverable sequence)
+- `tests/` — pytest test suite (26 tests, all passing)
+- `experiments/` — pilot scripts and notebooks
+- `data/` — curated data (H3 ground truth event table, crisis anchor dates)
+- `results/` — per-experiment JSON outputs, summary CSVs, and the headline writeups (`MECHANISM.md`, `h3_v11_summary.md`, `reframed_results.md`)
+- `paper/` — manuscript source *(pending — see `results/` for current paper material)*
 
 ## Status
 
-Active development. See `docs/DESIGN_MEMO.md` for the locked design decisions and the deliverable sequence, and `docs/IMPLEMENTATION_NOTES.md` for known gaps between what the methodology describes and what the code currently does.
-
-The H1/H2 regime entry/exit logic lives in `experiments/` rather than in a `volcascade.regime` package module as the design memo suggests — this is a packaging gap, not a methodological one. The coupling/decoupling primitives live in `src/volcascade/decoupling.py`.
+Active development. The pre-registered parameter set, the four hypotheses, and their pre-registered pass criteria are documented in `docs/DESIGN_MEMO.md`. The current empirical findings — including the vol-peak effect (H1'), the vol-peak exit signal (H2 v2), and the H3b event-magnitude effect — are in `results/MECHANISM.md` and `results/reframed_results.md`.
 
 ## Authors
 

@@ -19,7 +19,7 @@ import pandas as pd
 from scipy import stats as sps
 from sklearn.metrics import roc_auc_score
 
-ROOT = Path("/opt/data/volcascade")
+ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from volcascade import build, slope, zscore
@@ -27,7 +27,6 @@ from volcascade.io import load_prices
 
 INNER_WINDOW = 10
 ZSCORE_LOOKBACK = 120
-
 
 def main() -> None:
     print("=" * 78)
@@ -38,12 +37,12 @@ def main() -> None:
     print(f"\nloading {ASSETS} (2000-2024)...")
     prices = load_prices(ASSETS, start="2000-01-01", end="2024-12-31")
     returns = np.log(prices / prices.shift(1)).dropna()
-    print(f"  loaded {returns.shape[0]} days\n")
+    print(f" loaded {returns.shape[0]} days\n")
 
     OOS_SPLITS = [2014, 2016, 2018, 2020]
     rows = []
     for split_year in OOS_SPLITS:
-        print(f"\n  Split year = {split_year}:")
+        print(f"\n Split year = {split_year}:")
         for asset in ASSETS:
             rets = returns[asset].dropna()
             cascade = build(rets, orders=(1, 2, 3, 4), inner_window=INNER_WINDOW)
@@ -99,7 +98,7 @@ def main() -> None:
                 "ratio": float(ratio) if ratio is not None else None,
             })
             sig = "*" if auc_test > 0.5 else " "
-            print(f"    {sig} {asset}: full={auc_full:.3f}  train={auc_train:.3f}  test={auc_test:.3f}  ratio={ratio:+.3f}" if ratio is not None else f"    {sig} {asset}: ratio=n/a")
+            print(f" {sig} {asset}: full={auc_full:.3f} train={auc_train:.3f} test={auc_test:.3f} ratio={ratio:+.3f}" if ratio is not None else f" {sig} {asset}: ratio=n/a")
 
     # Aggregate
     df = pd.DataFrame(rows)
@@ -108,25 +107,25 @@ def main() -> None:
     print("=" * 78)
     if len(df) > 0:
         # Per-asset
-        print(f"\n  Per-asset (median across splits):")
+        print(f"\n Per-asset (median across splits):")
         for asset in ASSETS:
             sub = df[df["asset"] == asset]
             if len(sub) == 0:
                 continue
             med_test = sub["auc_test"].median()
             n_above = (sub["auc_test"] > 0.5).sum()
-            print(f"    {asset}: median test AUC = {med_test:.3f}  ({n_above}/{len(sub)} above 0.5)")
+            print(f" {asset}: median test AUC = {med_test:.3f} ({n_above}/{len(sub)} above 0.5)")
         # Aggregate
-        print(f"\n  Aggregate (across all {len(df)} (asset, split) pairs):")
-        print(f"    median test AUC: {df['auc_test'].median():.3f}")
-        print(f"    fraction above 0.5: {(df['auc_test'] > 0.5).mean():.1%}")
-        print(f"    median test/full ratio: {df['ratio'].median():.3f}")
+        print(f"\n Aggregate (across all {len(df)} (asset, split) pairs):")
+        print(f" median test AUC: {df['auc_test'].median():.3f}")
+        print(f" fraction above 0.5: {(df['auc_test'] > 0.5).mean():.1%}")
+        print(f" median test/full ratio: {df['ratio'].median():.3f}")
         if df['auc_test'].median() > 0.5:
-            print(f"    --> OOS AUC is {df['auc_test'].median():.3f}, ABOVE 0.5")
-            print(f"    --> Generalizes (signal holds out-of-sample)")
+            print(f" --> OOS AUC is {df['auc_test'].median():.3f}, ABOVE 0.5")
+            print(f" --> Generalizes (signal holds out-of-sample)")
         else:
-            print(f"    --> OOS AUC is {df['auc_test'].median():.3f}, BELOW 0.5")
-            print(f"    --> Does NOT generalize (data dredging concern confirmed)")
+            print(f" --> OOS AUC is {df['auc_test'].median():.3f}, BELOW 0.5")
+            print(f" --> Does NOT generalize (data dredging concern confirmed)")
 
     out_path = ROOT / "results" / "direction_oos.json"
     with open(out_path, "w") as f:
@@ -138,7 +137,6 @@ def main() -> None:
                        "median_test_full_ratio": float(df['ratio'].median()) if len(df) > 0 else None,
                    }}, f, indent=2)
     print(f"\nresults saved to {out_path}")
-
 
 if __name__ == "__main__":
     main()

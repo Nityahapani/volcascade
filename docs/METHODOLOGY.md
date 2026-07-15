@@ -1,234 +1,127 @@
-# Volatility Cascade — Methodology
+# Volatility Cascade — Mathematical Treatment
 
-**Companion to:** `DESIGN_MEMO.md` (locked design decisions)
-**Status:** First draft, 2026-07-13
-**Target venue:** Modern Finance
+This document is the formal mathematical treatment of the volatility
+cascade. It is referenced from `src/volcascade/__init__.py` and
+`src/volcascade/cascade.py`.
 
----
+The locked design decisions, pre-registered parameter set, and the four
+pre-registered hypotheses (H1–H4) are documented in
+**`docs/DESIGN_MEMO.md`**. The vol-peak mechanism and the empirical
+findings are documented in **`results/MECHANISM.md`**.
 
-## 1. Setup and notation
+## 1. Cascade construction
 
-Let $r_{i,t} = \log(p_{i,t}/p_{i,t-1})$ denote the log-return of asset $i$ on day $t$, with $i \in \{1, \dots, N\}$ and $t \in \{1, \dots, T\}$. The realized variance over a rolling window of length $L$ is
+Let $r_t$ denote the log return at time $t$. The volatility cascade at
+differentiation order $k$ is defined recursively.
 
-$$
-RV_{i,t}^{(1)}(L) \;=\; \sum_{s=t-L+1}^{t} r_{i,s}^2.
-$$
+Order 1 is realized volatility over a rolling window of length
+$w_{\text{inner}}$:
 
-The realized volatility is its square root, $\sigma^{(1)}_{i,t}(L) = \sqrt{RV_{i,t}^{(1)}(L)}$. Throughout, we work with $\sigma^{(1)}_{i,t}$ directly, not its square, so that "orders of volatility" compose by re-applying the realized-vol operator rather than re-summing squares.
+    sigma^(1)_t = sqrt(sum_{i=0..w_inner-1} r^2_{t-i})
 
-The **order-$k$ volatility** for $k \geq 1$ is defined recursively:
+For $k \geq 2$, order-$k$ volatility is the rolling sample standard
+deviation of order-$(k-1)$ volatility, with the same window length:
 
-$$
-\sigma^{(k)}_{i,t}(L) \;=\; \sqrt{\frac{1}{L}\sum_{s=t-L+1}^{t} \bigl(\sigma^{(k-1)}_{i,s} - \overline{\sigma^{(k-1)}_{i,t}}\bigr)^2},
-$$
+    sigma^(k)_t = std(sigma^(k-1)_{t-w_inner+1:t})
 
-where $\overline{\sigma^{(k-1)}_{i,t}} = \frac{1}{L}\sum_{s=t-L+1}^{t} \sigma^{(k-1)}_{i,s}$ is the trailing mean of the order-$(k-1)$ series. Equivalently, $\sigma^{(k)}_{i,t}$ is the rolling sample standard deviation of $\sigma^{(k-1)}_{i,s}$ over $[t-L+1, t]$.
+We use $K = 4$ throughout, per the pre-registered design (Gatheral,
+Jaisson, Rosenbaum 2018; orders $> 4$ are noise-dominated). The warmup
+period is $(K-1) \times w_{\text{inner}}$ observations.
 
-We truncate at $k_{\max} = 4$. The cutoff is empirically anchored in Section 9 (effective-N analysis on synthetic series): order-5 and above are noise-dominated for both developed and frontier samples at standard lookback lengths.
+## 2. Z-scoring and cascade slope
 
-## 2. Z-score normalization
+Each order is z-scored against its own trailing history with a lookback
+$L_z$:
 
-To make orders $1, \dots, k_{\max}$ comparable on a common scale, each order-$k$ series is z-scored against its own trailing history of length $Z$:
+    z^(k)_t = (sigma^(k)_t - mu^(k)_t) / s^(k)_t
 
-$$
-z^{(k)}_{i,t}(L, Z) \;=\; \frac{\sigma^{(k)}_{i,t}(L) - \mu^{(k)}_{i,t}(Z)}{\eta^{(k)}_{i,t}(Z)},
-$$
+where $\mu^{(k)}_t$ and $s^{(k)}_t$ are the rolling mean and standard
+deviation computed on the trailing window $[t - L_z, t - 1]$ (strictly
+past data, no look-ahead bias).
 
-where $\mu^{(k)}_{i,t}(Z)$ and $\eta^{(k)}_{i,t}(Z)$ are the rolling mean and standard deviation of $\sigma^{(k)}_{i,s}$ over $[t-Z+1, t-1]$. We default to $Z \in \{60, 120, 252\}$ (trading days, robustness battery).
+The cascade slope is the OLS regression slope of differentiation order
+index against the z-scored order-specific volatilities at time $t$:
 
-The z-scoring serves two purposes: (i) it places each order on a unit-variance scale so cross-order comparison is meaningful; (ii) it absorbs slow-moving level shifts (e.g. the secular upward trend in VVIX documented by Albers 2023), so the cascade captures *shape* not *level*.
+    beta_t = sum_k (k - k_bar)(z^(k)_t - z_bar_t) / sum_k (k - k_bar)^2
 
-## 3. Cascade slope
+where $\bar{k} = 2.5$ and $\bar{z}_t$ is the cross-order mean z-score.
 
-At each $t$ and for each asset $i$, we have a vector of z-scores
+$\beta_t > 0$ indicates steepening (higher orders more elevated than
+lower orders); $\beta_t < 0$ indicates inversion (higher orders less
+elevated).
 
-$$
-\mathbf{z}_{i,t} \;=\; \bigl(z^{(1)}_{i,t}, z^{(2)}_{i,t}, z^{(3)}_{i,t}, z^{(4)}_{i,t}\bigr) \in \mathbb{R}^{4}.
-$$
+## 3. Auxiliary statistics
 
-The **cascade slope** $\beta_{i,t}$ is the OLS coefficient from regressing the order index $k = 1, \dots, 4$ on $z^{(k)}_{i,t}$:
+The Shannon entropy of the $|z|$-weighted order distribution is
+computed as a non-linear robustness check:
 
-$$
-\beta_{i,t} \;=\; \frac{\sum_{k=1}^{4}(k - \bar{k})(z^{(k)}_{i,t} - \bar{z}_{i,t})}{\sum_{k=1}^{4}(k - \bar{k})^2}, \qquad \bar{k} = 2.5.
-$$
+    H_t = -sum_k p_k log p_k,    p_k = |z^(k)_t| / sum_k |z^(k)_t|
 
-A **flat** cascade ($\beta \approx 0$) means all orders move together; a **steepening** cascade ($\beta > 0$) means higher orders move more than lower orders (instability-of-instability); an **inverted** cascade ($\beta < 0$) means higher orders move less, consistent with mean-reversion of volatility-of-volatility.
+with the convention $0 \log 0 = 0$. Entropy is bounded above by
+$\log K$; high entropy indicates a flat cascade (orders evenly
+weighted), low entropy indicates concentration in one order.
 
-A **secondary** summary, the **cascade entropy** $H_{i,t}$, is the Shannon entropy of the normalized z-score vector:
+## 4. Cross-sectional decoupling
 
-$$
-p^{(k)}_{i,t} = \frac{|z^{(k)}_{i,t}|}{\sum_j |z^{(j)}_{i,t}|}, \qquad H_{i,t} = -\sum_{k=1}^{4} p^{(k)}_{i,t} \log p^{(k)}_{i,t}.
-$$
+For a stock and its sector, the decoupling order $k^*$ is the smallest
+order at which the joint distribution of $(z^{(k)}_{\text{stock}},
+z^{(k)}_{\text{sector}})$ rejects the null of equal conditional
+distributions via a Chow test. The Chow F-statistic at breakpoint $k$
+with window length $L$ is:
 
-$H$ is bounded by $\log 4 \approx 1.386$, with high $H$ indicating evenly distributed orders (flat cascade) and low $H$ indicating concentration on a single order. $H$ is reported alongside $\beta$ as a non-linear robustness check.
+    F = ((RSS_pooled - RSS_unpooled) / q) / (RSS_unpooled / (2L - 2q))
 
-## 4. H1 — Cascade shape classifies regime breaks
+where $q = 2$ is the number of parameters per regression and
+$RSS_{\text{unpooled}} = RSS_{\text{before}} + RSS_{\text{after}}$ over the
+equal-sized before/after windows.
 
-For each day $t$ with $z^{(1)}_{i,t} > 1.5$ (an order-1 spike event), record the cascade slope $\beta_{i,t}$ and the forward $N$-day drawdown
+Low $k^*$ (decoupling at order 1–2) predicts idiosyncratic events; high
+$k^*$ or no-decoupling predicts systemic events.
 
-$$
-DD_{i,t}(N) = \frac{p_{i,t+N} - p_{i,t}}{p_{i,t}}.
-$$
+Two API functions are provided. `chow_decoupling` runs a single-midpoint
+Chow test on a single z-series (the "flat cascade baseline" used in
+early experiments). `chow_decoupling_cascade` runs a sliding-window
+Chow test on each order's z-series independently, returning the
+smallest $k^*$ where any window rejects. The latter is the formalization
+of the per-order Chow test used in the H3 v3–v5 experiment scripts.
 
-Stratify spike events by $\beta_{i,t}$ into tertiles (flat / moderate / steep). Test the null of equal forward-drawdown distributions across tertiles using a Mann-Whitney $U$ test (two-sided) and a Kolmogorov-Smirnov test (two-sided). Run separately for the developed sample (S&P 500) and the frontier sample.
+## 5. Pre-registered parameters
 
-**Pre-registered pass criterion (DESIGN_MEMO.md):** cascade-classified (steep-tertile) events have $\geq 2\times$ larger forward 5-day drawdown than flat-tertile events, with Mann-Whitney $p < 0.05$ after BH-FDR correction.
+| Parameter        | Pre-reg value | Sensitivity range     |
+|------------------|---------------|-----------------------|
+| `orders`         | (1, 2, 3, 4)  | fixed                 |
+| `inner_window`   | 10 days       | {5, 10, 20, 40}      |
+| `zscore_lookback`| 120 days      | {60, 120, 252}        |
+| `forward_days`   | 5 days        | {1, 2, 3, 5, 10, 20} |
+| `n_orders`       | 4             | {3, 4}                |
 
-## 5. H2 — Cascade convergence marks regime exit
+The pre-registered adversarial test parameters: 1000 universes of 5000
+iid $\mathcal{N}(0, \sigma^2)$ returns, PASS criterion $|\rho| < 0.05$
+in 95%+ of universes; 1000 universes of AR(1)-GARCH(1,1) with
+Student-$t$ innovations, mean Spearman $\approx 0$ expected.
 
-Define the **cascade convergence** signal $C_{i,t}$ as the rolling $K$-day change in the spread between the highest and lowest z-scored orders:
+## 6. Cross-references
 
-$$
-C_{i,t} = \frac{1}{K}\sum_{s=t-K+1}^{t}\bigl(\max_k z^{(k)}_{i,s} - \min_k z^{(k)}_{i,s}\bigr),
-$$
+- `docs/DESIGN_MEMO.md` — locked design decisions, pre-registered
+  hypotheses, comparison battery, sample scope, multiple testing.
+- `results/MECHANISM.md` — the vol-peak mechanism, the GARCH
+  relationship, frontier markets, Granger causality.
+- `results/h3_v11_summary.md` — H3 v11 model results and the
+  days-since-last-earnings calendar caveat.
+- `results/reframed_results.md` — the reframed findings for the paper.
+- `tests/` — 26 unit tests for the cascade, baselines, and decoupling.
 
-with $K = 20$ (one trading month). A regime exit is flagged on day $t$ if $C_{i,t}$ has fallen below its 60-day rolling median (a threshold-free, order-respecting analog of "the cascade is collapsing back to flat").
+## 7. References
 
-**Naive baseline:** flag an exit when $z^{(1)}_{i,t}$ crosses below its 60-day moving average. This is the standard order-1-only regime-exit signal in the HMM-and-MA literature (Hamilton 1989; Maheu & McCurdy 2000).
+Gatheral, J., Jaisson, T., & Rosenbaum, M. (2018). Volatility is rough.
+*Quantitative Finance*, 18(6), 933–949.
 
-**Comparison metric:** for each flagged exit, label it as *true* if no order-1 spike occurs in the next 20 trading days, *false* otherwise. Report the false-exit rate for both signals. Run separately for the developed and frontier samples.
+Hamilton, J. D. (1989). A new approach to the economic analysis of
+nonstationary time series and the business cycle. *Econometrica*, 57(2),
+357–384.
 
-**Pre-registered pass criterion:** cascade-convergence exits have false-exit rate < 30%, vs. ~50% for the order-1 MA baseline. (50% is the expected false rate of a threshold-crossing signal under random walk dynamics; a useful signal must beat it substantially.)
+Chow, G. C. (1960). Tests of equality between sets of coefficients in
+two linear regressions. *Econometrica*, 28(3), 591–605.
 
-## 6. H3 — Cross-sectional decoupling (the most novel piece)
-
-> **Code status (2026-07-14):** the per-order decoupling test described in
-> this section (test z^(k) for k=1..4 separately) is **not yet implemented**
-> in `src/volcascade/decoupling.py`. The current `chow_decoupling()` function
-> operates on a single z-scored series across all k (a flat-cascade baseline)
-> - its docstring admits this. The H3 v3-v5 experiment scripts in
-> `experiments/` get the per-order F-statistics by calling `chow_statistic`
-> directly on the order-specific z^(k) series inside the experiment (not
-> through the package API). See `docs/IMPLEMENTATION_NOTES.md` section 1
-> for the gap, the workaround the experiments use, and the priority for
-> closing it before paper submission.
-
-For a stock $i$ and its sector (or country) benchmark $b$, construct parallel cascades $\mathbf{z}_{i,t}$ and $\mathbf{z}_{b,t}$. The **decoupling order** $k^*_{i,t}$ is the smallest $k$ at which the joint distribution of $(z^{(k)}_{i,t}, z^{(k)}_{b,t})$ rejects the null of equal conditional distributions via a Chow test (Chow 1960) on the bivariate regression
-
-$$
-z^{(k)}_{b,t} = \alpha + \gamma\, z^{(k)}_{i,t} + \varepsilon_t,
-$$
-
-comparing the residual sum of squares for $s \in [t-W, t-1]$ and $s \in [t-W, t-K^*-1] \cup [t-K^*+1, t]$ (leave-one-out around $k^*$). The lookback is $W = 252$ trading days.
-
-Low $k^*$ (decoupling at order 1 or 2) means the stock and sector diverge in raw volatility; high $k^*$ or no decoupling means they co-move through all orders.
-
-**Hypothesis:** low-$k^*$ decoupling predicts *idiosyncratic* events (the stock is moving on its own information); high-$k^*$ / no-decoupling predicts *systemic* events (everything is moving together through all orders of the cascade).
-
-**Ground truth (H3):** idiosyncratic = AAPL earnings (40 events, 2015-2024); systemic = FOMC decisions (81 events, 2015-2024). The methodology's broader ambition (M&A from SDC, FDA binaries from BioPharmCatalyst, CEO exits, NFP, GFC peak days, COVID crash days) is documented in `docs/IMPLEMENTATION_NOTES.md` section 4 as not yet implemented. The currently-curated 121-event table is committed as `data/ground_truth_events.csv` and the same dates are also available programmatically via `experiments/h3_ground_truth.py` (`aapl_earnings_dates()`, `fomc_dates()`).
-
-**Pre-registered pass criterion:** decoupling order $k^*$ predicts event type (idiosyncratic vs systemic) with AUC > 0.7, using logistic regression with 5-fold time-series cross-validation.
-
-**Robustness:** repeat with cross-correlation threshold (decoupling = rolling correlation drops below 0.5) and KL divergence between conditional distributions. Report all three.
-
-## 7. H4 — Cross-market extension
-
-Re-run H1 and H3 on the frontier sample (NSE Kenya, GSE Ghana, BVSP Brazil, JSE South Africa, NSE India, BSE Bangladesh) paired with their country/regional ETFs as the "sector" proxies.
-
-**Interaction test:** the headline result is whether the cascade's classification accuracy (H1, H3) differs significantly between developed and frontier subsamples. Use a bootstrap test (1000 resamples of days, block-resampled at monthly frequency to preserve serial dependence) on the AUC difference. Report $p$-value after BH-FDR correction across all H1 × frontier / H3 × frontier / H1 × developed / H3 × developed comparisons.
-
-**Pre-registered pass criterion:** cross-market classification difference is significant at $p < 0.05$ after BH-FDR.
-
-**Mechanism interpretation:** the comparison tests the Brunnermeier-Pedersen (2009) liquidity-spiral hypothesis — does slower price discovery in thin markets (i) amplify vol-of-vol signal (cascade steeper in crisis) or (ii) mask it (cascade noisier)? The direction of the difference is *not* pre-registered (this is an empirical question), only its significance.
-
-## 8. Comparison battery
-
-All four hypotheses are evaluated against a canonical set of baselines drawn from the regime-detection and vol-of-vol literature:
-
-| Method | Reference | What it tests | Code status |
-|---|---|---|---|
-| HMM (Gaussian, 2-state) | Hamilton 1989 | Standard Markov regime detector; BIC selects state count | shipped |
-| MS-AR(1) | Hamilton 1989; Ang-Bekaert 2002a | Markov-switching AR with fixed K=2 | *pending* - not in package; experiments use HMM only |
-| Wasserstein $k$-means | Campani et al. 2021 | Non-parametric, distribution-based regime classifier | **shipped as a simplification** - see note below |
-| Bai-Perron F-test | Bai & Perron 2003 | Multiple structural change points in the cascade slope series | **shipped as a simplification** - see note below |
-| Inclán-Tiao CUSUM | Inclán & Tiao 1994 | CUSUM of squares for variance shifts | shipped (finite-n correction not applied; see note) |
-| RCM | Ang & Bekaert 2002b | Regime Classification Measure (how cleanly the model separates regimes) | shipped (degenerate with hard labels; see note) |
-
-**Notes on the simplified baselines (added 2026-07-14):**
-
-- **Wasserstein k-means** - `volcascade.baselines.wasserstein_regime` is Euclidean
-  KMeans on 5-bin histograms of sliding windows, not Wasserstein-2 distance.
-  The Campani 2021 reference describes true optimal-transport clustering, which
-  requires the `POT` library. The current implementation captures the *idea*
-  (distribution-based regime classifier) but not the metric. See IMPLEMENTATION_NOTES.md section 2.1.
-- **Bai-Perron F-test** - `volcascade.baselines.bai_perron_breaks` runs PELT
-  (`ruptures.Pelt` with RBF kernel, BIC-style penalty), not Bai-Perron's
-  sequential F-test. It produces change-point locations but no F-statistics,
-  so a true F-test claim is not supportable. The PELT output is used as a
-  change-point detector in the experiments. See IMPLEMENTATION_NOTES.md section 2.2.
-- **Inclán-Tiao CUSUM** - the asymptotic critical values are used at all
-  sample sizes. The code includes a placeholder line
-  `critical = a + (a - 0.4) * 0.0  # asymptotic; could refine for finite n`
-  where `(a - 0.4) * 0.0` is always zero. A finite-n refinement (Kiefer,
-  butler, or simulation-based) should be added. See IMPLEMENTATION_NOTES.md section 2.3.
-- **RCM** - with hard state labels, the current implementation collapses RCM
-  to 0 (because p in {0, 1} makes p(1-p) = 0). The Ang-Bekaert formula
-  expects soft state probabilities p_t in [0, 1]. Either enforce soft
-  probabilities at the API level or document the degeneracy. See IMPLEMENTATION_NOTES.md section 2.4.
-
-The cascade slope $\beta_t$ is fed *into* Bai-Perron and Inclán-Tiao as a preprocessed series; the cascade itself is not a standalone classifier but a *feature* that the standard detectors consume. This isolates the cascade's marginal contribution.
-
-## 9. Adversarial test (the rebuttal)
-
-Reviewers will ask whether the cascade is "just vol-of-vol with extra steps." The rebuttal rests on a synthetic experiment.
-
-**Procedure:**
-
-1. Simulate two synthetic universes:
-   - **DM-calibrated:** AR(1)-GARCH(1,1) with Student-$t$ innovations, parameters fit to SPY realized volatility (long memory, low noise floor, $\nu \approx 5$).
-   - **FM-calibrated:** same model, parameters fit to a representative frontier market (e.g. NSE Kenya) — higher noise floor, lower signal-to-noise, more frequent parameter instabilities.
-2. Inject *no true regime structure* into either. Run the cascade construction on both.
-3. **Null hypothesis:** the cascade slope distribution is symmetric around 0 in both universes (no spurious steepening).
-4. **Reject criterion:** if the cascade shows systematic steepening or inversion in either universe, the cascade is detecting the GARCH dynamics rather than regime structure, and the H1/H2/H3/H4 results are confounded.
-
-This is the single most important robustness check in the paper. A clean synthetic test (no spurious cascade) buys the entire empirical section.
-
-## 10. Sample size and effective N
-
-Report the effective sample size $N_{\text{eff}}^{(k)}$ at each order $k$ for each sample. For order $k$, $N_{\text{eff}}^{(k)} = T - (k-1) \cdot L - Z + 1$ (each successive order loses $L$ days of warmup plus the z-score window). For the default $L=20$, $Z=252$, $T=2520$ (10 years of daily data):
-
-| Order $k$ | $N_{\text{eff}}$ |
-|---|---|
-| 1 | 2269 |
-| 2 | 2249 |
-| 3 | 2229 |
-| 4 | 2209 |
-
-The frontier sample has shorter history for some markets (NSE Kenya data is reliable from ~2005; GSE Ghana from ~2010); order-4 estimates in the frontier are flagged as exploratory. Power calculations are reported in the appendix.
-
-## 11. Multiple testing
-
-We conduct $\sim 120$ tests across the 4 hypotheses × 2 samples × 3 lookbacks × 5 forward windows, before interaction tests. We control the false discovery rate at $q = 0.05$ using Benjamini-Hochberg FDR (Benjamini & Hochberg 1995). All reported $p$-values are BH-adjusted unless otherwise noted.
-
-We also pre-register the *test battery* (which tests get run) before looking at results, to prevent specification-search. The full pre-registration is in `docs/PREREGISTRATION.md` (to be written before the pilot).
-
-## 12. Pre-registered success criteria (consolidated)
-
-| Hypothesis | Pass criterion |
-|---|---|
-| H1 | Steep-tertile events have $\geq 2\times$ larger forward 5-day drawdown than flat-tertile (Mann-Whitney $p < 0.05$ after BH-FDR) |
-| H2 | Cascade-convergence exits have false-exit rate < 30% vs. ~50% for order-1 MA baseline |
-| H3 | Decoupling order $k^*$ predicts event type with AUC > 0.7 (5-fold TS-CV) |
-| H4 | DM vs. FM classification difference significant at $p < 0.05$ after BH-FDR |
-
-A result that fails any criterion is reported as a *negative* or *partially-supported* result, not discarded. The pre-registration binds the analysis but not the conclusion.
-
-## 13. Open methodological questions
-
-1. **Optimal $L$ for the inner rolling window:** currently fixed at 20. Should we estimate $L$ from the data (e.g. via minimum-description-length)?
-2. **H3 decoupling at low-frequency (weekly/monthly) events:** the Chow test is calibrated for daily spikes. M&A announcements often have multi-day drift; do we need a slower decoupling definition for slow-burn idiosyncratic events?
-3. **Cascade slope regularization:** OLS is sensitive to collinearity (orders are highly correlated at long lookbacks). Ridge-regularized slope as robustness.
-4. **Multivariate cascade:** the current framework is univariate (one asset at a time). A multivariate cascade (joint $\sigma$ across assets) would be a natural extension, but is out of scope for the v1 paper.
-
-5. **Per-order decoupling test** - current code does not test z^(k) separately for k=1..4 (see section 6 note and IMPLEMENTATION_NOTES.md section 1). Top priority for the v1 paper.
-6. **Proper Wasserstein k-means** - Euclidean on histograms is a placeholder (see section 8 note and IMPLEMENTATION_NOTES.md section 2.1).
-7. **Proper Bai-Perron F-test** - PELT placeholder does not return F-stats (see section 8 note and IMPLEMENTATION_NOTES.md section 2.2).
-8. **Multiple-testing correction** - BH-FDR across the full test battery is not yet applied; raw p-values are reported in the JSON result files. See IMPLEMENTATION_NOTES.md section 5.
-
-These are flagged for sensitivity analysis in the appendix; they do not block the v1 design.
-
----
-
-*End of methodology v1. Next: package MVP (cascade.py + decoupling.py + baselines.py) implementing Sections 1-3, 6, 8. Pilot script runs H1 on S&P 500 with synthetic-adversarial pre-test.*
-
-*Doc-vs-code audit on 2026-07-14: added H3 code-status callout in section 6, expanded the section 8 baseline table with shipped-as-simplified notes, added items 5-8 to the open questions list. See `docs/IMPLEMENTATION_NOTES.md` for the full audit.*
+Brunnermeier, M. K., & Pedersen, L. H. (2009). Market liquidity and
+funding liquidity. *Review of Financial Studies*, 22(6), 2201–2238.

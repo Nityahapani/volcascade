@@ -12,7 +12,7 @@ import pandas as pd
 from scipy import stats as sps
 from scipy.stats import theilslopes
 
-ROOT = Path("/opt/data/volcascade")
+ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from volcascade import build, slope, zscore
@@ -89,10 +89,10 @@ for asset in returns.columns:
     # Spearman of pred vs actual
     rho, _ = sps.spearmanr(v, f)
     print(f"\n{asset}:")
-    print(f"  Spearman(predicted_vol, actual_fwd_vol): {rho:+.4f}")
-    print(f"  Sharpe cascade-informed: {sharpe_strat:.3f}  (annualized)")
-    print(f"  Sharpe constant-target (perfect): {sharpe_const:.3f}")
-    print(f"  Sharpe buy-and-hold: {sharpe_bh:.3f}")
+    print(f" Spearman(predicted_vol, actual_fwd_vol): {rho:+.4f}")
+    print(f" Sharpe cascade-informed: {sharpe_strat:.3f} (annualized)")
+    print(f" Sharpe constant-target (perfect): {sharpe_const:.3f}")
+    print(f" Sharpe buy-and-hold: {sharpe_bh:.3f}")
     diff = sharpe_strat - sharpe_bh
     sign = "BEATS" if diff > 0 else "LOSES"
-    print(f"  --> cascade strategy {sign} B&H by {abs(diff):.3f}")
+    print(f" --> cascade strategy {sign} B&H by {abs(diff):.3f}")
