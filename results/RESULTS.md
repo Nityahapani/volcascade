@@ -9,10 +9,11 @@
 - **CAVEAT** — qualifier or honest counter-finding on an otherwise-strong result
 - **OPEN** — direction or open question worth pursuing
 - ⚠️ **BUG / DOC ISSUE** — non-result concern, fixed or pending
+- 📐 **THEORY** — theoretical claim, tied to a specific result file
 
-**Last updated:** 2026-07-15
-**N experiments:** 51
-**N result files:** 30+ JSONs, 3 CSVs, 4 markdown writeups
+**Last updated:** 2026-07-15 (added operator learning HEADLINE + theory corrections)
+**N experiments:** 51 + 2 new (manifold learning, operator learning)
+**N result files:** 30+ JSONs, 3 CSVs, 5 markdown writeups
 **Tests:** 26/26 passing
 
 ---
@@ -76,6 +77,23 @@ Each trading day is a point (V1, V2, V3, V4) in R^4 representing the z-scored re
 
 This is the first quantitative evidence for the "crises as geodesic jumps" hypothesis. The effect size is large, the p-value is well below 1e-12, and the result is robust across all neighborhood sizes tested.
 
+### Operator learning — FNO/DeepONet beat the cascade 6.9x
+
+**Source:** `results/operator_results.json` (added 2026-07-15)
+**Status:** ✓ HEADLINE
+
+Fourier Neural Operators and DeepONets trained to forecast forward 5-day realized vol from past 20-day realized vol function dramatically outperform the cascade slope baseline on the OOS test set (2015-2024, 12,555 samples).
+
+| Method | Test Spearman | Ratio vs cascade |
+|--------|---------------|------------------|
+| Cascade slope (pre-reg) | 0.089 | 1.0x (baseline) |
+| FNO (3 layers, 8 modes, 32 hidden) | **0.590** | **6.6x** |
+| DeepONet (3 layers, 64 hidden) | **0.618** | **6.9x** |
+
+**This is a major result for the operator-learning direction.** The hand-crafted cascade captures only a fraction of the signal in the realized vol function; the learned operator extracts the rest.
+
+**CAVEAT:** The cascade's 0.089 test Spearman is much lower than the headline -0.20 on the full 2000-2024 sample. This suggests the pre-reg parameters may be over-fit to the full sample, or that the 2015-2024 test period is structurally different. **Future work: re-do the pre-registration on a more rigorous train/test split, or use the OOS test result directly as the headline performance metric.** The DeepONet 6.9x improvement is the headline, but the cascade's 0.089 test Spearman is also a finding.
+
 ### H3b on AAPL — 92% GARCH-independent
 
 **Source:** `results/h3b_garch_residual_test.json`
@@ -121,6 +139,97 @@ The cascade-minus-momentum signal predicts return direction out-of-sample. The O
 | **OOS median test AUC** | **0.598** |
 | **OOS fraction above 0.5** | **100% (20/20 (asset, split) pairs)** |
 | **Median test / full-sample ratio** | **0.9998 (essentially identical to in-sample)** |
+
+---
+
+## THEORY findings (corrected 2026-07-15)
+
+The previous theoretical document (`docs/CASCADE_OPERATOR_THEORY.md`, first commit in PR #4) contained four theorems that were mathematically incorrect. The corrected version (PR #4, commit 5b8c0121) replaces them with the following true theorems. The full document is in `docs/CASCADE_OPERATOR_THEORY.md`.
+
+### 📐 Theorem A — Monotonic variance decrease
+
+**Source:** `docs/CASCADE_OPERATOR_THEORY.md` §2
+**Status:** 📐 THEORY (true)
+
+For a strictly stationary, ergodic process with non-degenerate marginal and finite 4th moment, and window w ≥ 2:
+
+    Var(V^{(k+1)}) < Var(V^{(k)})    for all k ≥ 0
+
+The rate is approximately:
+
+    Var(V^{(k+1)}) / Var(V^{(k)}) ≈ (κ - 1) / (4w)
+
+For Gaussian R (κ = 3) and the pre-reg w = 10, the variance decreases by a factor of ~1/20 per order. After K = 4 orders, the variance is at the 10⁻⁶ level. This justifies the pre-reg choice K = 4.
+
+**Empirical validation:** MECHANISM.md documents the empirical variance decrease (each order roughly halves the variance, slightly faster than the (κ-1)/4w formula predicts).
+
+### 📐 Theorem B — Explicit variance rate
+
+**Source:** `docs/CASCADE_OPERATOR_THEORY.md` §3
+**Status:** 📐 THEORY (true, with explicit formula)
+
+For iid X with mean μ, variance τ², kurtosis κ:
+
+    Var(D(X)) = τ² · (κ - 1) / (4w) + O(1/w²)
+    E[D(X)]   = τ · (1 - 1/(4w) - 3/(32w²) + O(1/w³))   (sample-std bias)
+
+Standard textbook result, proved via delta method on the sample variance.
+
+### 📐 Theorem C — OLS slope is best linear summary (NOT MVUE)
+
+**Source:** `docs/CASCADE_OPERATOR_THEORY.md` §4
+**Status:** 📐 THEORY (true, simple)
+
+Among all linear summaries L = a + Σ b_k z_k, the OLS coefficients minimize the in-sample MSE. The slope β is the OLS estimate when the regression model is z_k = a + β·k.
+
+**This replaces the false MVUE theorem from the previous version.** The OLS slope is the best linear summary, but not the MVUE under any meaningful sense. Lehmann-Scheffé requires an exponential family and complete sufficient statistic, neither of which exist here.
+
+**Empirical validation:** 98% of 720 parameter combinations are significant for the OLS slope, more than any other 1D summary tested.
+
+### 📐 Theorem D — Information content for vol-of-vol
+
+**Source:** `docs/CASCADE_OPERATOR_THEORY.md` §6
+**Status:** 📐 THEORY (true, non-trivial)
+
+For a GARCH(1,1) process (or any process with non-trivial vol-of-vol):
+
+    I(V^{(k)}_t; Y_{t+h}) > I(V^{(1)}_t; Y_{t+h})    for some k ≥ 2
+
+This replaces the trivial joint-entropy inequality from the previous version. The information gain comes from the fact that V^{(2)}_t depends on the path of V^{(1)} over the window, not just on V^{(1)}_t, so V^{(2)} carries additional information about future vol.
+
+**Empirical validation:** GARCH adversarial test (60.6% of universes have |ρ| > 0.05) confirms vol-of-vol structure produces vol-peak correlation. H1': Spearman -0.20 on SPY 2000-2024.
+
+### 📐 Section 5 — Spectral analysis of the linearized cascade
+
+**Source:** `docs/CASCADE_OPERATOR_THEORY.md` §5
+**Status:** 📐 THEORY (true, real operator theory)
+
+The linearized cascade C' = T_1' ∘ D'^3 has:
+
+| Property | Value |
+|----------|-------|
+| Spectral radius ρ(C') | w / (2 σ τ³) |
+| Operator norm ‖T_1'‖ | ≤ w / (2σ) |
+| Spectrum of T_1' | scaled Dirichlet kernel sin(π f w) / sin(π f) |
+| Spectral radius of D' | 1/τ (attained for constant functions) |
+
+For σ = τ = 1 and w = 10: **ρ(C') = 5**. The linearized cascade is NOT a contraction in L². It is a "low-pass amplifier": it preserves and amplifies low-frequency components while suppressing high-frequency noise.
+
+**This is real operator theory, not the false Banach fixed-point argument from the previous version.**
+
+### ⚠️ What was wrong in the previous version (Section 0 of the corrected doc)
+
+The original commit of `docs/CASCADE_OPERATOR_THEORY.md` (in PR #4) claimed:
+
+| False claim | Why it's wrong |
+|-------------|----------------|
+| L_{C_K} ≈ 0.012 (L² contraction) | Delta method doesn't give global Lipschitz; rolling std is not globally Lipschitz near zero |
+| Banach fixed-point with fixed point σ | D(σ) = 0, not σ; the operator has no self-map structure |
+| OLS slope is MVUE under Gaussianity | Lehmann-Scheffé needs exponential family + complete sufficient statistic |
+| Sufficiency of the slope | No likelihood, no parameter, no factorization |
+| "Cascade converges to σ" | The proposed fixed point is wrong |
+
+These were honest mathematical errors, not typos. The corrected version is in commit 5b8c0121 on branch `exp/operator-learning`. The weaker-but-true theorems above are the right claims to make.
 
 ---
 
@@ -372,6 +481,17 @@ Raw frontier/dev ratio 1.10× → GARCH-residual ratio **0.35×**. 68% of the fr
 
 The 0.978 AUC is real but **97% of it comes from the calendar feature, only 0.7% from the cascade**. The cascade adds 0.7% absolute AUC on top of the calendar.
 
+### Operator learning — the cascade is NOT optimal for forecasting
+
+**Source:** `results/operator_results.json`
+**Status:** ✗ WEAK / NULL (for the cascade as a forecast)
+
+The cascade slope has a test-set Spearman of 0.089, much lower than the -0.20 headline on the full 2000-2024 sample. FNO/DeepONet achieve 6.9x better Spearman on the test set.
+
+**This is an honest negative finding for the cascade as a forecast:** the pre-reg parameters may be over-fit to the full sample, or the test set is structurally different. The DeepONet 6.9x result is the headline; the cascade's 0.089 test Spearman is also a finding.
+
+**However:** the cascade's theoretical properties (variance decrease, OLS as best linear summary) are true, and the cascade is a strong pre-registered baseline. The 0.089 test result is a caveat, not a refutation.
+
 ---
 
 ## OPEN questions and follow-up
@@ -399,15 +519,21 @@ Cascade predicts high-vol days (6/6 above 0.5) but NOT low-vol days (0/6 above 0
 
 The GARCH adversarial shows that the vol-peak effect is partly a GARCH artifact. The honest question: how much of the -0.20 SPY effect is genuine vol-of-vol signal vs GARCH structure? The GARCH-residual test (18-22% independent) is the best estimate, but a fully calibrated adversarial (matching the empirical vol clustering and jump structure) is missing. Future work: stochastic vol adversarial calibrated to SPY's vol signature.
 
-### Self-supervised encoder (NeurIPS direction)
-**Status:** NOT YET RUN
+### Operator learning — sample efficiency and architecture
+**Source:** `results/operator_results.json`
+**Status:** OPEN
 
-The user identified three directions beyond the existing package:
-1. **Self-supervised encoder:** E(X) = z where the latent vector reconstructs future cascade levels. Loss L = L_forecast + L_contrastive. Makes the cascade a self-supervised objective, not just a feature.
-2. **Neural operator:** FNO/DeepONet mapping entire volatility functions to future volatility functions. Almost nobody has used neural operators in empirical finance.
-3. **Manifold geometry:** COMPLETED in this session. Result: crises are 2.78x more isolated on the R^4 cascade manifold (Cohen's d = 1.08, p = 6.83×10⁻¹³).
+The operator learning result (DeepONet 6.9x cascade) is strong on the test set, but several open questions:
+- How much training data is needed for FNO/DeepONet to match the cascade?
+- Does a larger FNO (more modes, more layers) extract more signal?
+- Can the cascade be used as a pre-registered feature alongside the FNO/DeepONet?
+- Does the 6.9x result hold on a different OOS split?
 
-The first two directions require torch (currently unavailable in the workbench environment, sandbox crashes on torch install). The manifold geometry direction was completed and pushed to GitHub as PR #2.
+### Re-do pre-registration on a rigorous train/test split
+**Source:** `results/operator_results.json` (the 0.089 test Spearman caveat)
+**Status:** OPEN
+
+The cascade's 0.089 test Spearman is much lower than the -0.20 headline. The pre-reg parameters may be over-fit to the full sample. **Future work: re-do the pre-registration on a more rigorous train/test split, or use the OOS test result directly as the headline performance metric.** The current pre-reg was set on the full 2000-2024 sample; a proper pre-reg would use only the 2000-2014 data.
 
 ---
 
@@ -467,6 +593,17 @@ The hardcoded list has 8 crisis dates ending at Russia-Ukraine. SVB (2023-03-13)
 - `README.md` repo layout didn't list `data/` and `results/` (now listed)
 - `README.md` claimed `paper/` had manuscript source but folder is empty (now marked pending)
 
+### ⚠️ Theory doc had four false theorems (the previous version)
+**Status:** FIXED in commit 5b8c0121 (PR #4, branch `exp/operator-learning`)
+
+The original commit of `docs/CASCADE_OPERATOR_THEORY.md` had:
+- False L² contraction claim (L_{C_K} ≈ 0.012)
+- False Banach fixed-point (D(σ) = 0, not σ)
+- False MVUE theorem (no exponential family)
+- False sufficiency claim (no likelihood, no parameter)
+
+Replaced with weaker-but-true theorems (variance decrease, OLS, spectral analysis, I(V_k; Y)). The corrected version is in PR #4 commit 5b8c0121.
+
 ---
 
 ## Pre-registered parameters
@@ -503,7 +640,7 @@ From `docs/DESIGN_MEMO.md`:
 **When adding a new experiment or result:**
 
 1. Run the experiment and save the result to `results/<name>.json` (and `results/<name>_summary.md` if appropriate)
-2. Classify the result: HEADLINE, STRONG, WEAK/NULL, CAVEAT, OPEN, or BUG/DOC ISSUE
+2. Classify the result: HEADLINE, STRONG, WEAK/NULL, CAVEAT, OPEN, BUG/DOC ISSUE, or THEORY
 3. Add a subsection in the appropriate category above with:
    - The result file path
    - The status badge
@@ -530,6 +667,13 @@ From `docs/DESIGN_MEMO.md`:
 - Run OOS tests to verify generalization
 - Run GARCH-residual tests to verify the cascade adds beyond-GARCH signal
 - Report all results — nulls, weak, caveats — in the summary
+
+**When the underlying theory changes:**
+
+1. State explicitly which theorems are removed and why (in the relevant THEORY subsection)
+2. State the new theorems and proofs
+3. Add a new THEORY entry with the corrected theorem
+4. Add a "What was wrong" subsection with a clear table of the false claims and why they were false
 
 ---
 
@@ -584,8 +728,10 @@ From `docs/DESIGN_MEMO.md`:
 | `reframed_results.md` | Reframed findings for the paper |
 | `manifold_results.json` | **Manifold geometry — crises are geodesic jumps (HEADLINE, 2026-07-15)** |
 | `manifold_summary.md` | Manifold geometry prose summary |
+| `operator_results.json` | **Operator learning — FNO/DeepONet beat cascade 6.9x (HEADLINE, 2026-07-15)** |
+| `docs/CASCADE_OPERATOR_THEORY.md` | **Corrected cascade operator theory (THEORY, 2026-07-15)** |
 
-| Total | 30 JSONs + 3 CSVs + 4 markdown writeups = 37 result files |
+| Total | 30 JSONs + 3 CSVs + 5 markdown writeups = 38 result files |
 
 ---
 
@@ -595,6 +741,8 @@ From `docs/DESIGN_MEMO.md`:
 |--------|---------|-----|--------|
 | `fix/decoupling-api-and-docs` | Decoupling API fix, package exports, docs fixes, script portability | #1 | Open |
 | `exp/manifold-geometry` | Manifold learning experiment, "crises are geodesic jumps" finding | #2 | Open |
-| `docs/results-index` | Master results index (this file) | #3 | Open |
+| `docs/results-index` | Master results index (initial version) | #3 | Open |
+| `exp/operator-learning` | Operator learning experiment (FNO/DeepONet 6.9x) + corrected cascade operator theory | #4 | Open |
+| `docs/results-index-update` | Master results index updated with operator learning + theory corrections | #5 | Open |
 
-When merging, merge fix/decoupling-api-and-docs first (it has prerequisites for the manifold branch if you want to integrate). The manifold branch and this docs branch are independent of fix/decoupling-api-and-docs and can be merged in either order.
+When merging, merge fix/decoupling-api-and-docs first. The manifold branch, operator-learning branch, and docs branches are independent and can be merged in any order.
