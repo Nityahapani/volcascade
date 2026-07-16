@@ -1,0 +1,38 @@
+{
+  "title": "Pre-registered architecture search - iteration 1 (4 FNO variants)",
+  "date": "2026-07-16",
+  "pre_reg_doc": "experiments/prereg_architecture_search.md",
+  "selection_rule": "Highest validation Spearman on 2015-2024 SPY",
+  "architectures": ["FNO_tiny (1 mode, 4 width, 1 layer)", "FNO_small (2 mode, 8 width, 2 layer)", "FNO_medium (4 mode, 16 width, 2 layer)", "FNO_large (8 mode, 32 width, 3 layer)"],
+  "validation_results": {
+    "FNO_tiny": 0.2023,
+    "FNO_small": 0.2621,
+    "FNO_medium": 0.2770,
+    "FNO_large": 0.2501
+  },
+  "selected": "FNO_medium",
+  "h1_test_2025_plus": {
+    "FNO_medium_spearman": 0.3855,
+    "FNO_medium_p_value": 8.36e-15,
+    "cascade_spearman": -0.1617,
+    "n_test": 377,
+    "fno_passed_bonferroni": true
+  },
+  "h2_test_2010_2014_holdout": {
+    "FNO_medium_spearman": 0.0301,
+    "FNO_medium_p_value": 0.286,
+    "cascade_spearman": -0.3201,
+    "n_test": 1258,
+    "fno_passed_bonferroni": false,
+    "fno_NOT_significant_on_h2": "TRUE - the selected model fails the 2010-2014 true holdout"
+  },
+  "international_5_assets": {
+    "SPY": {"FNO": 0.3691, "cascade": -0.1617},
+    "XLK": {"FNO": 0.3271, "cascade": -0.2109},
+    "XLF": {"FNO": 0.1919, "cascade": -0.0714},
+    "XLV": {"FNO": 0.1276, "cascade": -0.0614},
+    "XLE": {"FNO": 0.1845, "cascade": 0.0861}
+  },
+  "international_5_intl_assets": "INSUFFICIENT DATA - intl assets only have data from 2004, too short for the pre-reg train period 2000-2014",
+  "conclusion": "FNO_medium is excellent on H1 (2025+) but FAILS on H2 (2010-2014 true holdout). This is a regime-specific result, not robust. The cascade slope is robustly negative on both H1 and H2 (-0.16 and -0.32). The FNO fails to generalize across the GFC vs calm period transition."
+}
