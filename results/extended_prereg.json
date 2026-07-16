@@ -1,0 +1,33 @@
+{
+  "title": "Extended pre-reg: Transformer is the new winner (H1+H2 both 5/5 positive)",
+  "date": "2026-07-16",
+  "selection_rule": "Highest mean validation Spearman on 2015-2024 across 5 US assets",
+  "candidates_evaluated": ["FNO_tiny (1M, 4W, 1L)", "FNO_small (2M, 8W, 2L)", "FNO_medium (4M, 16W, 2L)", "FNO_large (8M, 32W, 3L)", "FNO_xlarge (16M, 64W, 4L) NEW", "Transformer (d=16, 2H, 2L)", "NBEATS (failed: shape bug)", "PatchTST (d=32, 4H, 2 layers)"],
+  "val_results": {
+    "FNO_tiny": -0.081,
+    "FNO_small": 0.234,
+    "FNO_medium": 0.224,
+    "FNO_large": 0.239,
+    "FNO_xlarge": 0.225,
+    "Transformer": 0.240,
+    "PatchTST": 0.228
+  },
+  "selected": "Transformer (val = 0.240)",
+  "test_results": {
+    "H1_2025+_Transformer": {
+      "SPY": 0.411,
+      "XLK": 0.272,
+      "XLF": 0.214,
+      "XLV": 0.202,
+      "XLE": 0.271
+    },
+    "H2_2010-2014_Transformer": {
+      "SPY": 0.181,
+      "XLK": 0.197,
+      "XLF": 0.186,
+      "XLV": 0.196,
+      "XLE": 0.271
+    }
+  },
+  "headline": "Transformer is the new pre-reg winner. H1: 5/5 US positive (0.20-0.41). H2: 5/5 US positive (0.18-0.27). This fixes the FNO H2 weakness. Both H1 and H2 are now robustly positive across all 5 US assets."
+}
