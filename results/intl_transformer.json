@@ -1,0 +1,14 @@
+{
+  "title": "International generalization: Transformer does NOT transfer",
+  "date": "2026-07-16",
+  "method": "Train Transformer on intl data 2010-2016, validate 2017-2019, test on 2020-2024 (intl H1). H2: 2005-2009 train, 2010-2014 test.",
+  "results": {
+    "EWJ": {"H1": -0.135, "H2": "N/A"},
+    "EFA": {"H1": -0.022, "H2": "N/A"},
+    "GLD": {"H1": -0.134, "H2": "N/A"},
+    "TSM": {"H1": -0.041, "H2": "N/A"},
+    "ASHR": {"H1": -0.180, "H2": "N/A"}
+  },
+  "headline": "Transformer does NOT transfer to international assets. 5/5 intl assets are NEGATIVE on H1. The model learns US-specific patterns that don't generalize. This is an honest limitation that should be in the paper.",
+  "interpretation": "The Transformer is US-specific. International generalization requires either (a) per-region models, (b) meta-learning, or (c) fundamentally different architecture. We acknowledge this as a limitation. The cascade SLOPE does generalize internationally (we have data showing this), but the non-linear Transformer does not."
+}
