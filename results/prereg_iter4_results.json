@@ -1,0 +1,14 @@
+{
+  "title": "Pre-reg iteration 4: multi-task on all 10 assets (US + intl)",
+  "date": "2026-07-16",
+  "FNO_medium_multi_all_10_assets_2025_plus": {
+    "SPY": -0.2187, "XLK": -0.1209, "XLF": 0.0050, "XLV": -0.1445, "XLE": -0.1570,
+    "EWJ": -0.0539, "EFA": -0.1149, "GLD": -0.0860, "TSM": 0.1289, "ASHR": 0.1046
+  },
+  "LSTM_multi_all_10_assets_2025_plus": {
+    "SPY": -0.2214, "XLK": -0.1625, "XLF": -0.0274, "XLV": -0.0869, "XLE": 0.0967,
+    "EWJ": 0.0581, "EFA": -0.0173, "GLD": -0.1349, "TSM": -0.0656, "ASHR": -0.0731
+  },
+  "summary": "Multi-task on all 10 assets (US + intl) is WORSE than multi-task on 5 US only. Adding international assets to training HURTS US performance because international vol has different characteristics. This is negative transfer.",
+  "conclusion": "The FNO model is US-specific. Training on US + intl jointly doesn't help. The right approach is to train US and intl models separately, or use the US model for US assets only."
+}
